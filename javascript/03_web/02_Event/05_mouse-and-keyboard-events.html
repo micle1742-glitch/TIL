@@ -23,6 +23,21 @@
 <button id="mouse-btn">여기를 클릭/우클릭 해보세요</button>
 <div id="mouse-area" class="area"></div>
 <script>
+    const $mousebtn = document.getElementById('mouse-btn')
+    const $mouserArea = document.getElementById('mouse-area')
+
+    //click : 마우스 왼쪽을 눌렀다 똈을 때
+    $mousebtn.addEventListener('dblclick', (e)=> {
+        $mouserArea.innerHTML += 'dblclick 이벤트 발생!<br>'
+    })
+
+    //mousedown: 마우스 버튼을 누르는 순간
+    //e.button -> 버튼어디로눌렀는지 0왼쪽 1가운데 2오른쪽
+    $mousebtn.addEventListener('mousedown', (e)=> {
+        $mouserArea.innerHTML += `마우스다운 이벤트 발생! ${e.button}<br>`
+
+    })
+    
 
 </script>
 
@@ -40,6 +55,29 @@
 <input type="text" id="keyboard-input" placeholder="아무 키나 입력하세요">
 <div id="keyboard-area" class="area"></div>
 <script>
+    const $keyboardInput = document.getElementById('keyboard-input')
+    const $keyboarArea = document.getElementById('keyboard-area')
+    $keyboardInput.addEventListener('keydown', (e) => {
+        $keyboarArea.textContent = `keydown 이벤트 발생 했고 
+        e.key: ${e.key}
+        e.code: ${e.code}`
+
+        if (e.key === 'Enter') {
+            console.log('검색을 실행합니다')
+            //실제 검색 함수 호출
+        }
+
+    })
+
+    $keyboardInput.addEventListener('keyup', (e) => {
+        console.log('keyup 이벤트 발생!')
+    })
+    
+    //방금 누른 문자까지 반영된 최신입력값을 처리해야 한다면
+    //키보드 이벤트보다 input 이벤트가 더 적합하다.
+    $keyboardInput.addEventListener('input', (e) => {
+        console.log(e.currentTarget.value)
+    })
 
 </script>
 </body>

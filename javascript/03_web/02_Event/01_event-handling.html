@@ -26,7 +26,17 @@
     </pre>
 
 <button id="btn2">방법 2 버튼</button>
+
 <script>
+    const $btn2 = document.getElementById('btn2')
+    $btn2.onclick = function(){
+        console.log('첫 번째 임무 수행');
+    }
+    //onclick 프로퍼티는 함수 하나만 저장 할 수 있는 변수 같은 공간이기 떄문에
+    //나중에 대입한 함수가 이전 함수를 대체
+    $btn2.onclick = function () {
+        alert('두 번째 임무 수행!');
+    }
 
 </script>
 
@@ -40,6 +50,14 @@
 
 <button id="btn3">방법 3 버튼</button>
 <script>
+    const $btn3 = document.getElementById('btn3')
+    $btn3.addEventListener('click',function(){
+        console.log('첫 번쨰 임무 수행!')
+    })
+    $btn3.addEventListener('click',function(){
+        alert('두 번쨰 임무 수행!')
+    })
+
 
 </script>
 
@@ -56,6 +74,26 @@
 <button id="removeBtn">임무 제거</button>
 
 <script>
+    const $btn4 = document.getElementById('btn4')
+    const $addbtn4 = document.getElementById('addBtn')
+    const $removeBtn = document.getElementById('removeBtn')
+
+    const mission = () => {
+        alert('특수 임무 수행 완료!')
+    }
+    $addbtn4.addEventListener('click',() => {
+        $btn4.addEventListener('click',mission)
+        console.log('btn4에 임무가 추가되었습니다.')
+    });
+
+    $removeBtn.addEventListener('click',() => {
+        $btn4.removeEventListener('click',mission)
+        console.log('btn에서 임무가 제거되었습니다.')
+    })
+
+    //익명함수는 제거불가 다른함수로취급
+
+    
 
 </script>
 </body>
