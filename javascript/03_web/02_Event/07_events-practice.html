@@ -226,15 +226,21 @@
                 const $menuButton = e.target.closest('.select-menu')
                 if (!$menuButton) return
 
+                //모든 메뉴 selected제거
                 $menuList.querySelectorAll('.menu-item').forEach(menu => {
+                    //클릭한 메뉴만 selected 추가
                     menu.classList.remove('selected')
 
+                    //data-menu-id가져오기
                     $menuButton.parentElement.classList.add('selected')
 
+                    //메뉴 id가져오기
                     const menuId = $menuButton.dataset.menuId
 
+                    //메뉴이름가져오기
                     const menuName = $menuButton.parentElement.querySelector('span').textContent
 
+                    //결과출력
                     $menuResult.textContent = `메뉴명: ${menuName},메뉴 id: ${menuId}`
                 })
 
@@ -314,17 +320,17 @@
                 $characterCount.textContent = `현재글자수: ${$messageInput.value.length}`
             })
             $messageInput.addEventListener('keydown', (e) => {
-                if(e.key === 'Enter') {
+                if (e.key === 'Enter') {
                     const message = $messageInput.value.trim()
                     if (!message) return
                     $typingResult.textContent = `입력 완료: ${message}`
                     $messageInput.value = ''
                 }
-                
+
 
             })
-            
-            
+
+
 
 
         </script>
@@ -347,7 +353,34 @@
         </form>
         <p id="signup-result" class="result">검증 결과가 여기에 표시됩니다.</p>
         <script>
+            const $form = document.querySelector('#signup-form');
+            const $name = document.querySelector('#user-name');
+            const $password = document.querySelector('#user-password');
+            const $terms = document.querySelector('#terms');
+            const $result = document.querySelector('#signup-result');
+
+            $form.addEventListener('submit',최종폼)
+            function 최종폼 (e){
+                e.preventDefault();
             
+            if ($name.value.trim().length < 2) {
+                
+                $result.textContent = '두글자 이상 입력해주세요'
+                return;
+            }
+            if ($password.value.trim().length < 6) {
+                
+                $result.textContent = '여섯글자 이상 입력해주세요'
+                return;
+            }
+            if (!$terms.checked) {
+                
+                $result.textContent = '이용약관에동의'
+                return
+            }
+            alert ('모든검증통과')
+        }
+
         </script>
     </section>
 </body>

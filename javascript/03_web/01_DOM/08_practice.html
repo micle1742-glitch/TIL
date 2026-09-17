@@ -283,7 +283,18 @@
         <script>
             function showRelations() {
                 // 코드 작성
-                
+                const $currentStep = document.querySelector('#current-step')
+                const $parent = $currentStep.parentElement;
+                $parent.style.borderColor = 'blue'
+                const $first = $parent.firstElementChild;
+                $first.classList.add('edge')
+                const $last = $parent.lastElementChild;
+                $last.classList.add('edge')
+                const $previous = $currentStep.previousElementSibling
+                const $next = $currentStep.nextElementSibling
+
+                const $result = document.querySelector('#traversal-result')
+                $result.textContent = `이전: ${$previous.textContent} 다음: ${$next.textContent}`;
             }
         </script>
     </section>
@@ -313,10 +324,27 @@
         <script>
             function addTodo() {
                 // 코드 작성
+                const $input = document.querySelector('#todo-input')
+                const value = $input.value.trim()
+                if (value === '') {
+                    return
+                }
+                const $li = document.createElement('li')
+                $li.textContent = value;
+                const $todolist = document.querySelector('#todo-list')
+                $todolist.appendChild($li)
+                $input.value = ''
             }
 
             function removeLastTodo() {
                 // 코드 작성
+                const $todolist = document.querySelector('#todo-list');
+
+                if ($todolist.lastElementChild === null) {
+                    return
+                }
+                $todolist.removeChild($todolist.lastElementChild);
+
             }
         </script>
     </section>
@@ -355,6 +383,23 @@
         <script>
             function selectProduct(productId) {
                 // 코드 작성
+                const $product = document.querySelector(
+                    `[data-product-id="${productId}"]`
+                );
+                const id = $product.dataset.productId
+                const name = $product.dataset.productName
+                const price = $product.dataset.price
+
+                const $products = document.querySelectorAll('.product-card');
+                for (const product of $products) {
+                    product.classList.remove('selected')
+                    product.removeAttribute('data-selected')
+
+                }
+                $product.classList.add('selected')
+                $product.setAttribute('data-selected', 'ture')
+                const $result = document.querySelector('#selected-product')
+                $result.textContent = `${name}${price}`
             }
         </script>
     </section>
@@ -390,10 +435,43 @@
         <script>
             function applyProfile() {
                 // 코드 작성
+                const $nameInput = document.querySelector('#profile-name-input')
+                const $messageInput = document.querySelector('#profile-message-input')
+
+                const name = $nameInput.value;
+                const message = $messageInput.value;
+
+                const $profileName = document.querySelector('#profile-name');
+                const $profileMessage = document.querySelector('#profile-message');
+
+                $profileName.textContent = name;
+                $profileMessage.textContent = message;
+
+                const $colorInput = document.querySelector('#profile-color-input')
+                const $profileCard = document.querySelector('#profile-card')
+
+                $profileCard.style.borderColor = $colorInput.value
+
+                const $sizeSelect = document.querySelector('#profile-size-select')
+                if ($sizeSelect.value === compact) {
+                    $profileCard.classList.add('compact');
+                } else $profileCard.classList.remove('comapact')
+
+                
+
+
             }
 
             function toggleDarkMode() {
                 // 코드 작성
+                const $darkMode = document.querySelector('#dark-mode-button')
+                const $profileCard = document.querySelector('#profile-card')
+                $profileCard.classList.toggle('dark')
+                if($profileCard.classList.contains ('dark')){
+                    $darkMode.textContent = '다크 모드 끄기'
+                } else {$darkMode.textContent = '다크 모드 켜기'}
+                
+                
             }
         </script>
     </section>
