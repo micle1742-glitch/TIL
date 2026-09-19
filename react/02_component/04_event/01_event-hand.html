@@ -91,17 +91,34 @@
                 </>)
 
         }
-        
+        function CustomButton (onClick, children) {
+            console.log(props)
+            return (
+                <>
+                <button style={{
+                    backgroundColor : 'black', 
+                    color: 'white', 
+                    border: 'none'}} 
+                    onClick={onclick}>{children}버튼</button>
+                </>
+            )
+        }
 
         function App() {
+            const showWelcomeMessage = () => {
+                alert('우리 사이트에 오신 것을 환영합니다')
+            }
             return(
                 <>
                  <SignupFormBasic />
                  <hr/>
                  <SignupFormAdavanced/>
+                 <hr/>
+                 <CustomButton onClick={showWelcomeMessage}>
+                 <strong>환영합니다</strong>
+                </CustomButton>
                 </>
                 
-
             )
             
             
