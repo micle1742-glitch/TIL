@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+
+        const { useState, useEffect } = React;
+        const API_URL = 'https://api.github.com/emojis-broken'
+
+        //사용자의 입력을 받고 '검색' 이벤트가 발생했음을 부모에게 알린다
+        //자신이 무엇을 검색하는지 모른다. (오직 부모에게 전달만 할뿐)
+
+        function SearchBox({ onSearch }) {
+            //스테이트 이벤트함수작성가능
+            const [inputText, setInputText] = useState('')
+
+            return (
+                <>
+                    <input
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                    />
+                    <button onClick={() => onSearch(inputText)}>서치</button>
+                </>
+            )
+        }
+
+        //부모가 주는 상태(loading, imgUrl)에 따라 화면을다르게보여준다.
+        //로딩중인지, 이미지가 있는지 없는지 스스로 판단하지 않는다.
+        function ImageBox({ loading, imgUrl, notFound, error }) {
+            if (loading) {
+                return <p>로딩중...</p>
+            }
+            if (error) {
+                return <p>{error}</p>
+            }
+            if (notFound) {
+                return <p>검색 결과가 없습니다.</p>;
+            }
+
+            return (
+                <>
+                    <img src={imgUrl} />
+                </>
+            )
+        }
+
+        //모든 데이터와 상태 (로딩, 전체 이모지 목록, 검색 결과(url)를 관리)
+        //api통신을 책임지고, 자식들의 행동에 따라 상태를 업데이트 한다.
+        function App() {
+            const [emojis, setEmojis] = useState({})
+            const [loading, setLoading] = useState(false)
+            const [imgUrl, setImgUrl] = useState('')
+            const [error, setError] = useState('');
+            const [notFound, setNotFound] = useState(false);
+
+            useEffect(() => {
+                setLoading(true);
+
+                fetch(API_URL)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error ('데이터를 불러오지못했습니다')
+                        }
+                        response.json()})
+                    
+                    .then(data => {
+                        setEmojis(data);
+                        setLoading(false);
+
+
+                    })
+                    .catch(err => {
+                        setError('데이터를 불러오지 못했습니다.');
+                        setLoading(false);
+                    });
+            }, []);
+
+            const handleSearch = (emojiName) => {
+                if (!Object.keys(emojis).length || emojiName.trim() === '') {
+                    return;
+                }
+
+                const foundUrl = emojis[emojiName]
+                console.log(emojiName, foundUrl);
+                setImgUrl(foundUrl || null);
+                setNotFound(!foundUrl);
+            }
+
+
+
+            return (
+
+                <>
+                    <h1>이모지 검색기</h1>
+
+                    {/*'무엇을 할지'가 아닌, '어떻게 해야하는지(함수)'를 알려준다*/}
+                    <SearchBox onSearch={handleSearch} />
+                    <br />
+                    {/*자식에게는 현재'상태(로딩중,에러,imgURL)'만 알려준다*/}
+                    <ImageBox imgUrl={imgUrl}
+                        loading={loading}
+                        error={error}
+                        notFound={notFound} />
+                </>
+            )
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />)
+    </script>
+
+</body>
+
+</html>
