@@ -1,0 +1,37 @@
+
+.MenuItem {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 20px;
+    margin: 12px 0;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+/* 마우스를 올렸을 때 */
+.MenuItem:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    border-color: #f59e0b;
+}
+
+/* 메뉴 이름 */
+.MenuItem h2:first-child {
+    font-size: 20px;
+    color: #222;
+    margin-bottom: 10px;
+}
+
+/* 가격 */
+.MenuItem h2:nth-child(2) {
+    font-size: 17px;
+    color: #ea580c;
+}
+
+/* 메뉴 종류 */
+.MenuItem h2:nth-child(3) {
+    font-size: 14px;
+    color: #777;
+}

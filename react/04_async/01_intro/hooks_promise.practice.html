@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,33 +9,118 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        * { box-sizing: border-box; }
-        body { max-width: 850px; margin: 0 auto; padding: 36px 18px 80px; color: #222; background: #f4f6fa; font-family: Arial, "Noto Sans KR", sans-serif; line-height: 1.6; }
-        h1 { margin-bottom: 4px; }
-        h2 { margin-top: 0; font-size: 21px; }
-        .intro { margin-top: 0; color: #596275; }
-        .problem { margin-top: 24px; padding: 24px; border: 1px solid #dfe4ea; border-radius: 12px; background: #fff; }
-        .requirements { padding: 14px 18px 14px 36px; border-radius: 8px; background: #f1f4ff; }
-        .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0; }
-        input, button { padding: 9px 11px; font-size: 15px; }
-        input { min-width: 0; border: 1px solid #bec7d1; border-radius: 6px; }
-        button { border: 0; border-radius: 6px; color: #fff; background: #315efb; cursor: pointer; }
-        button.secondary { background: #596275; }
-        .result { min-height: 42px; padding: 9px 12px; border: 1px dashed #a4b0be; border-radius: 6px; background: #fafafa; }
-        .hint { color: #596275; font-size: 14px; }
-        ul.items { padding-left: 22px; }
-        code { padding: 1px 4px; border-radius: 3px; background: #e9edf3; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 36px 18px 80px;
+            color: #222;
+            background: #f4f6fa;
+            font-family: Arial, "Noto Sans KR", sans-serif;
+            line-height: 1.6;
+        }
+
+        h1 {
+            margin-bottom: 4px;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 21px;
+        }
+
+        .intro {
+            margin-top: 0;
+            color: #596275;
+        }
+
+        .problem {
+            margin-top: 24px;
+            padding: 24px;
+            border: 1px solid #dfe4ea;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .requirements {
+            padding: 14px 18px 14px 36px;
+            border-radius: 8px;
+            background: #f1f4ff;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin: 16px 0;
+        }
+
+        input,
+        button {
+            padding: 9px 11px;
+            font-size: 15px;
+        }
+
+        input {
+            min-width: 0;
+            border: 1px solid #bec7d1;
+            border-radius: 6px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 6px;
+            color: #fff;
+            background: #315efb;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background: #596275;
+        }
+
+        .result {
+            min-height: 42px;
+            padding: 9px 12px;
+            border: 1px dashed #a4b0be;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .hint {
+            color: #596275;
+            font-size: 14px;
+        }
+
+        ul.items {
+            padding-left: 22px;
+        }
+
+        code {
+            padding: 1px 4px;
+            border-radius: 3px;
+            background: #e9edf3;
+        }
     </style>
 </head>
+
 <body>
     <h1>Hooks와 Promise 실습</h1>
-    <p class="intro">문제 1·2는 필수, 문제 3은 선택 심화입니다. 문제 1은 Console에서, 문제 2·3은 화면과 Console에서 결과를 확인하세요. Promise가 낯설다면 수업의 <code>03_promise.html</code>을 참고해도 됩니다.</p>
+    <p class="intro">문제 1·2는 필수, 문제 3은 선택 심화입니다. 문제 1은 Console에서, 문제 2·3은 화면과 Console에서 결과를 확인하세요. Promise가 낯설다면 수업의
+        <code>03_promise.html</code>을 참고해도 됩니다.
+    </p>
 
     <section class="problem">
         <h2>문제 1. Promise로 순서가 있는 작업 처리하기 (필수)</h2>
         <ul class="requirements">
             <li><code>addAfterOneSecond(number)</code>가 Promise를 반환하도록 만드세요.</li>
-            <li>1초 뒤 전달받은 숫자에 10을 더합니다. 결과가 30 이하이면 <code>resolve(result)</code>, 30을 초과하면 <code>reject(new Error('30을 초과했습니다.'))</code>를 호출하세요.</li>
+            <li>1초 뒤 전달받은 숫자에 10을 더합니다. 결과가 30 이하이면 <code>resolve(result)</code>, 30을 초과하면
+                <code>reject(new Error('30을 초과했습니다.'))</code>를 호출하세요.
+            </li>
             <li>0부터 시작하여 작업을 계속 연결합니다. 성공한 결과를 Console에 출력하고 다음 Promise를 <code>return</code>하세요.</li>
             <li>10, 20, 30을 순서대로 출력한 뒤 다음 작업에서 실패하면 <code>.catch()</code>로 오류 메시지를 출력하세요.</li>
             <li>성공·실패와 관계없이 마지막에 <code>.finally()</code>로 <code>작업 종료</code>를 출력하세요.</li>
@@ -49,9 +135,16 @@
         // 문제 1. 이 부분은 React가 아닌 일반 JavaScript입니다.
         function addAfterOneSecond(number) {
             // TODO 1. new Promise를 반환하세요.
-            // TODO 2. setTimeout으로 1초 뒤 number + 10을 계산하세요.
-            // TODO 3. 결과가 30을 초과하면 Error 객체로 reject하고 종료하세요.
-            // TODO 4. 그렇지 않으면 계산 결과로 resolve하세요.
+            return new Promise((resolve, reject) => {
+                // TODO 2. setTimeout으로 1초 뒤 number + 10을 계산하세요.
+                setTimeout(() => {
+                    const result = number + 10
+                    // TODO 3. 결과가 30을 초과하면 Error 객체로 reject하고 종료하세요.
+                    if (result > 30) {reject(newError('30초를 초과함')) }
+                    // TODO 4. 그렇지 않으면 계산 결과로 resolve하세요.
+                    else { resolve(result) }
+                }, 1000)
+            })
         }
 
         function runPromisePractice() {
@@ -59,10 +152,28 @@
 
             // TODO 5. addAfterOneSecond(0)부터 시작하세요.
             // TODO 6. .then()을 연결하여 10, 20, 30을 차례로 출력하세요.
-            //         각 .then()에서 다음 작업의 Promise를 return해야 합니다.
-            // TODO 7. 결과 30에서 한 번 더 작업을 연결하여 실패를 확인하세요.
+            // 각 .then()에서 다음 작업의 Promise를 return해야 합니다.
+            addAfterOneSecond(0).then((result) => {
+                console.log(result);
+                return addAfterOneSecond(result)
+                })
+                // TODO 7. 결과 30에서 한 번 더 작업을 연결하여 실패를 확인하세요.
+                .then((result) => {
+                    console.log(result); // 20
+                    return addAfterOneSecond(result)
+                })
+                 .then((result) => {
+                    console.log(result); // 30
+                    return addAfterOneSecond(result)
+                })
             // TODO 8. .catch()에서 error.message를 출력하세요.
+                .catch((error)=>{
+                    console.log(error.message)
+                })
             // TODO 9. .finally()에서 '작업 종료'를 출력하세요.
+                .finally(()=>{
+                    console.log('작업 종료')
+                })
         }
     </script>
 
@@ -72,13 +183,25 @@
         // 문제 2. 일정 시간이 지나면 true가 되는 커스텀 Hook
         function useDelayReady(delay) {
             // TODO 1. 초기값이 false인 isReady state를 만드세요.
+            const [isReady,setIsReady]=useState(false)
 
             // TODO 2. useEffect에서 delay 밀리초 후 isReady를 true로 바꾸세요.
             //         delay가 바뀌면 isReady를 다시 false로 만들고 새 타이머를 시작하세요.
             //         effect의 cleanup에서 이전 타이머를 clearTimeout으로 정리하세요.
+            useEffect(()=>{
+                setIsReady(false)
+
+                const timer =setTimeout(()=>{
+                    setIsReady(true)
+                },delay)
+
+                return ()=>{
+                    clearTimeout(timer)
+                }
+            },[delay])
 
             // TODO 3. isReady를 반환하세요.
-            return false;
+            return isReady
         }
 
         function DelayPractice() {
@@ -87,6 +210,10 @@
             const isReady = useDelayReady(delay);
 
             // TODO 4. 처음 화면이 나타난 뒤 이름 input에 포커스가 가도록 useEffect를 작성하세요.
+
+            useEffect(()=>{
+                inputRef.current.focus()
+            },[])
 
             return (
                 <section className="problem">
@@ -135,15 +262,24 @@
             // TODO 1. searchProducts 함수를 useCallback으로 만드세요.
             //         함수는 전달받은 검색어를 query state에 저장합니다.
             //         검색과 관계없는 clickCount가 바뀌어도 함수 참조가 유지되도록 의존성을 지정하세요.
-            const searchProducts = (nextQuery) => {
+            const searchProducts = useCallback((nextQuery) => {
                 setQuery(nextQuery);
-            };
+            },[]);
 
             // TODO 2. filteredProducts를 useMemo로 계산하세요.
             //         query가 바뀔 때만 PRODUCTS를 filter하고, 상품 이름에 query가 포함되는지 확인하세요.
             //         대소문자와 앞뒤 공백은 무시하세요.
             //         계산될 때 Console에 '상품 목록 다시 계산'을 출력하세요.
-            const filteredProducts = PRODUCTS;
+            const filteredProducts = useMemo(()=>{
+                console.log('상품 목록 다시 계산')
+
+                const keyword = query.trim().toLowerCase()
+
+                return PRODUCTS.filter((product)=>{
+                    
+                   return product.name.toLowerCase().includes(keyword)
+                });
+            },[query]);
 
             return (
                 <section className="problem">
@@ -182,4 +318,5 @@
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
+
 </html>

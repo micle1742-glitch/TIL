@@ -1,0 +1,665 @@
+
+# 오늘 배운 내용 — Next.js Router와 동적 라우팅
+
+## 1. Next.js App Router
+
+Next.js에서는 `app` 폴더의 파일과 폴더 구조를 이용해서 페이지의 URL을 만든다.
+
+예를 들어:
+
+    src/app/
+    ├─ page.js
+    ├─ menu/
+    │  ├─ page.js
+    │  ├─ search/
+    │  │  └─ page.js
+    │  └─ [menuCode]/
+    │     └─ page.js
+
+각 파일의 URL은 다음과 같이 연결된다.
+
+- `app/page.js` → `/`
+- `app/menu/page.js` → `/menu`
+- `app/menu/search/page.js` → `/menu/search`
+- `app/menu/[menuCode]/page.js` → `/menu/값`
+
+즉, Next.js App Router에서는 **폴더 구조 자체가 URL 구조가 된다.**
+
+---
+
+# 2. page.js
+
+`page.js`는 해당 경로에서 실제로 보여줄 페이지를 담당한다.
+
+예:
+
+    app/menu/page.js
+
+이면:
+
+    /menu
+
+주소에서 해당 페이지가 렌더링된다.
+
+기본 형태:
+
+    export default function Menu() {
+        return (
+            <h1>메뉴 페이지입니다.</h1>
+        );
+    }
+
+`export default`로 페이지 컴포넌트를 내보낸다.
+
+---
+
+# 3. Layout
+
+`layout.js`는 여러 페이지에서 공통으로 사용할 화면 구조를 만드는 파일이다.
+
+기본 Root Layout:
+
+    export default function RootLayout({ children }) {
+        return (
+            <html>
+                <body>
+                    {children}
+                </body>
+            </html>
+        );
+    }
+
+여기서 `children`은 현재 페이지의 내용이 들어오는 자리이다.
+
+구조적으로 보면:
+
+    RootLayout
+        └─ children
+             └─ 현재 page.js
+
+즉, Layout은 공통 구조를 만들고 `children`을 통해 실제 페이지 내용을 표시한다.
+
+---
+
+# 4. 폴더 구조와 URL의 관계
+
+오늘 만든 메뉴 프로젝트에서는:
+
+    app/menu/
+    ├─ page.js
+    ├─ search/
+    │  └─ page.js
+    └─ [menuCode]/
+       └─ page.js
+
+이 구조를 사용했다.
+
+따라서:
+
+    /menu
+    /menu/search
+    /menu/1
+    /menu/2
+    /menu/3
+
+등의 URL을 만들 수 있다.
+
+특히 `[menuCode]`처럼 대괄호로 감싼 폴더가 중요하다.
+
+---
+
+# 5. 동적 라우팅
+
+동적 라우팅은 URL의 특정 부분이 상황에 따라 바뀌는 라우팅이다.
+
+예:
+
+    /menu/1
+    /menu/2
+    /menu/3
+
+각각 다른 메뉴를 보여주지만 페이지 파일을 여러 개 만들 필요는 없다.
+
+다음과 같이 하나의 파일로 처리한다.
+
+    app/menu/[menuCode]/page.js
+
+여기서 `[menuCode]`는 동적으로 변경되는 값이다.
+
+즉:
+
+    /menu/1
+    ↓
+    menuCode = 1
+
+    /menu/5
+    ↓
+    menuCode = 5
+
+---
+
+# 6. useParams
+
+동적 라우팅에서 URL의 파라미터 값을 가져올 때 `useParams()`를 사용한다.
+
+    import { useParams } from "next/navigation";
+
+    const { menuCode } = useParams();
+
+예를 들어 현재 URL이:
+
+    /menu/3
+
+이라면:
+
+    menuCode
+
+에서 URL의 동적 값 `3`을 가져올 수 있다.
+
+전체 흐름:
+
+    /menu/3
+       ↓
+    [menuCode]
+       ↓
+    useParams()
+       ↓
+    menuCode = 3
+
+---
+
+# 7. useParams를 이용한 메뉴 상세 페이지
+
+메뉴 상세 페이지는:
+
+    app/menu/[menuCode]/page.js
+
+에 만들었다.
+
+코드에서는:
+
+    const { menuCode } = useParams();
+
+로 URL의 메뉴 번호를 가져온다.
+
+그리고:
+
+    getMenubyMenuCode(menuCode)
+
+를 이용해 해당 메뉴 데이터를 조회한다.
+
+즉:
+
+    URL
+    ↓
+    /menu/3
+    ↓
+    useParams()
+    ↓
+    menuCode
+    ↓
+    메뉴 데이터 조회
+    ↓
+    메뉴 상세 화면 출력
+
+---
+
+# 8. 동적 라우팅의 핵심
+
+동적 라우팅은 다음 구조를 기억하면 된다.
+
+    [파라미터이름]
+
+예:
+
+    [menuCode]
+
+그리고 값을 가져올 때:
+
+    const { menuCode } = useParams();
+
+정리:
+
+- `[menuCode]` → URL의 동적인 부분을 정의
+- `useParams()` → 실제 URL 값을 가져옴
+
+---
+
+# 9. Link
+
+Next.js에서는 페이지를 이동할 때 `next/link`의 `Link`를 사용할 수 있다.
+
+    import Link from "next/link";
+
+사용:
+
+    <Link href="/menu">
+        메뉴 페이지
+    </Link>
+
+또는 동적인 URL도 만들 수 있다.
+
+    <Link href={`/menu/${menu.menuCode}`}>
+        메뉴 상세보기
+    </Link>
+
+메뉴 번호가 `3`이라면:
+
+    /menu/3
+
+으로 이동한다.
+
+---
+
+# 10. MenuItem에서 Link 사용
+
+오늘 만든 `MenuItem` 컴포넌트에서는 메뉴 하나를 클릭하면 해당 메뉴의 상세 페이지로 이동하도록 만들었다.
+
+    <Link href={`/menu/${menu.menuCode}`}>
+        <div>
+            <h2>메뉴 이름: {menu.menuName}</h2>
+            <h2>메뉴 가격: {menu.menuPrice}</h2>
+            <h2>메뉴 종류: {menu.categoryName}</h2>
+        </div>
+    </Link>
+
+예를 들어:
+
+    menu.menuCode = 3
+
+이라면:
+
+    /menu/3
+
+으로 이동한다.
+
+즉:
+
+    메뉴 목록
+       ↓
+    MenuItem 클릭
+       ↓
+    Link
+       ↓
+    /menu/3
+       ↓
+    [menuCode]
+       ↓
+    상세 페이지
+
+---
+
+# 11. useRouter
+
+`Link`가 JSX에서 페이지 이동을 만드는 방법이라면 `useRouter()`는 JavaScript 코드에서 직접 페이지를 이동시키는 방법이다.
+
+사용:
+
+    import { useRouter } from "next/navigation";
+
+    const router = useRouter();
+
+그리고:
+
+    router.push('/menu/search');
+
+처럼 사용할 수 있다.
+
+---
+
+# 12. router.push()
+
+`router.push()`는 코드를 실행해서 다른 URL로 이동시킨다.
+
+예:
+
+    const router = useRouter();
+
+    const onClickHandler = () => {
+        router.push('/menu/search');
+    };
+
+버튼을 클릭했을 때:
+
+    버튼 클릭
+       ↓
+    onClickHandler()
+       ↓
+    router.push()
+       ↓
+    다른 페이지로 이동
+
+---
+
+# 13. Link와 useRouter 차이
+
+## Link
+
+사용자가 직접 클릭해서 이동하는 링크를 만들 때 사용한다.
+
+    <Link href="/menu">
+        메뉴
+    </Link>
+
+## useRouter
+
+특정 이벤트나 조건에 따라 JavaScript 코드에서 이동시킬 때 사용한다.
+
+    router.push('/menu/search');
+
+간단히 기억:
+
+    Link
+    → 링크를 눌러 이동
+
+    useRouter
+    → 코드로 이동
+
+---
+
+# 14. Query String
+
+URL에서 `?` 뒤에 데이터를 전달하는 방법이다.
+
+예:
+
+    /menu/search?menuName=열무
+
+여기서:
+
+    menuName=열무
+
+부분이 Query String이다.
+
+구조:
+
+    ?키=값
+
+예:
+
+    ?menuName=열무
+
+이면:
+
+    키 → menuName
+    값 → 열무
+
+---
+
+# 15. 검색 기능에서 Query String 사용
+
+오늘 메뉴 검색에서는 사용자가 검색어를 입력한 뒤:
+
+    router.push(`/menu/search?menuName=${searchValue}`)
+
+를 실행한다.
+
+예를 들어:
+
+    searchValue = "열무"
+
+라면:
+
+    /menu/search?menuName=열무
+
+로 이동한다.
+
+즉:
+
+    검색어 입력
+       ↓
+    searchValue
+       ↓
+    검색 버튼 클릭
+       ↓
+    router.push()
+       ↓
+    /menu/search?menuName=열무
+
+---
+
+# 16. useSearchParams
+
+Query String의 값을 가져올 때 `useSearchParams()`를 사용한다.
+
+    import { useSearchParams } from "next/navigation";
+
+    const searchParams = useSearchParams();
+
+그리고:
+
+    const menuName = searchParams.get('menuName');
+
+를 사용하면 된다.
+
+URL이:
+
+    /menu/search?menuName=열무
+
+라면:
+
+    searchParams.get('menuName')
+
+의 결과는:
+
+    "열무"
+
+가 된다.
+
+---
+
+# 17. Query String 전체 흐름
+
+검색 페이지에서는 다음과 같은 흐름이 만들어졌다.
+
+    사용자가 검색어 입력
+           ↓
+    searchValue에 저장
+           ↓
+    검색 버튼 클릭
+           ↓
+    router.push()
+           ↓
+    /menu/search?menuName=검색어
+           ↓
+    useSearchParams()
+           ↓
+    searchParams.get('menuName')
+           ↓
+    검색어 획득
+           ↓
+    검색 결과 조회
+           ↓
+    화면에 출력
+
+---
+
+# 18. 동적 라우팅과 Query String의 차이
+
+둘 다 URL을 통해 데이터를 전달하지만 방식이 다르다.
+
+## 동적 라우팅
+
+    /menu/3
+
+여기서:
+
+    3
+
+이 동적인 URL 파라미터이다.
+
+가져올 때:
+
+    useParams()
+
+---
+
+## Query String
+
+    /menu/search?menuName=열무
+
+여기서:
+
+    menuName=열무
+
+가 Query String이다.
+
+가져올 때:
+
+    useSearchParams()
+
+---
+
+## 한 번에 비교
+
+    /menu/3
+         ↑
+    Dynamic Route
+         ↑
+    useParams()
+
+    /menu/search?menuName=열무
+                   ↑
+              Query String
+                   ↑
+          useSearchParams()
+
+---
+
+# 19. usePathname
+
+현재 URL의 경로를 가져올 때 `usePathname()`을 사용할 수 있다.
+
+    import { usePathname } from "next/navigation";
+
+    const pathname = usePathname();
+
+예를 들어 현재 주소가:
+
+    /menu
+
+이면:
+
+    pathname
+
+은:
+
+    "/menu"
+
+가 된다.
+
+---
+
+# 20. usePathname 활용
+
+현재 어떤 페이지에 있는지 확인해서 네비게이션 메뉴의 활성 상태를 표시할 수 있다.
+
+예:
+
+    const pathname = usePathname();
+
+    const isActive = (path) => pathname === path;
+
+그리고:
+
+    isActive('/menu')
+
+처럼 현재 경로와 비교할 수 있다.
+
+즉:
+
+    현재 URL
+       ↓
+    usePathname()
+       ↓
+    현재 경로 확인
+       ↓
+    메뉴 활성화 여부 판단
+
+---
+
+# 21. 'use client'
+
+Next.js App Router에서는 기본적으로 서버 컴포넌트를 사용한다.
+
+하지만 브라우저에서 실행되는 기능이나 React의 일부 기능을 사용해야 할 경우 클라이언트 컴포넌트로 지정해야 한다.
+
+파일의 가장 위에:
+
+    'use client'
+
+를 작성한다.
+
+오늘 Router 실습에서는 `useRouter`, `useParams`, `useSearchParams` 등을 사용하는 페이지에 `'use client'`를 사용했다.
+
+---
+
+# 22. 오늘 배운 Navigation Hook
+
+Next.js의 `next/navigation`에서 사용한 핵심 Hook:
+
+    useRouter()
+    useParams()
+    useSearchParams()
+    usePathname()
+
+각 역할:
+
+    useRouter()
+    → 코드로 페이지 이동
+
+    useParams()
+    → 동적 URL 파라미터 가져오기
+
+    useSearchParams()
+    → Query String 가져오기
+
+    usePathname()
+    → 현재 URL 경로 가져오기
+
+---
+
+# 23. Router 관련 핵심 암기
+
+- `page.js` : 해당 URL의 페이지
+- `layout.js` : 공통 레이아웃
+- `children` : 현재 페이지 내용이 들어오는 자리
+- `Link` : 링크를 이용한 페이지 이동
+- `useRouter()` : JavaScript 코드로 페이지 이동
+- `router.push()` : 지정한 URL로 이동
+- `[menuCode]` : 동적 라우팅
+- `useParams()` : 동적 URL 값 가져오기
+- `?menuName=열무` : Query String
+- `useSearchParams()` : Query String 값 가져오기
+- `usePathname()` : 현재 URL 경로 가져오기
+- `'use client'` : 클라이언트 컴포넌트로 지정
+
+---
+
+# 24. 오늘 Router에서 가장 중요한 연결
+
+    app/
+       ↓
+    폴더 구조
+       ↓
+    URL 생성
+       ↓
+    Link / useRouter
+       ↓
+    페이지 이동
+       ↓
+    동적 라우팅 또는 Query String
+       ↓
+    useParams / useSearchParams
+       ↓
+    URL에서 값 가져오기
+       ↓
+    그 값을 이용해 데이터 조회
+       ↓
+    결과를 화면에 출력
+
+---
+
+# 25. 한 줄 요약
+
+> Next.js App Router에서 파일과 폴더 구조로 URL을 만들고, `Link`와 `useRouter`로 페이지를 이동하며, `useParams`로 동적 경로 값을, `useSearchParams`로 Query String을, `usePathname`으로 현재 경로를 가져오는 방법을 배웠다.
