@@ -58,12 +58,37 @@
 
         useEffect(() => {
             // TODO 1. 목록 API를 fetch로 요청하고 응답의 ok 여부를 확인하세요.
-            // TODO 2. 목록 응답을 JSON으로 변환하세요.
+            fetch("https://pokeapi.co/api/v2/pokemon")
+            .then((response)=>{
+                if (!response.ok){
+                    throw new Error('실패')
+                }
+                // TODO 2. 목록 응답을 JSON으로 변환하세요.
+                return response.json()
+            })
             // TODO 3. listData.results의 각 상세 URL을 요청하는 Promise 배열을 만드세요.
             //         각 상세 응답의 ok 여부도 확인하고 JSON으로 변환하세요.
-            // TODO 4. Promise.all(detailPromises)을 반환해 다음 then에 연결하세요.
+            .then((listData)=>{
+                const detailPromises = listData.results.map((pokemon) => {
+                    return fetch(pokemon.url)
+                    .then((response)=>{
+                        if (!response.ok){
+                            throw new Error('실패')
+                        }
+                        return response.json()
+                    })
+
+                })
+                // TODO 4. Promise.all(detailPromises)을 반환해 다음 then에 연결하세요.
+                return Promise.all(detailPromises)
+            })  
             // TODO 5. 상세 정보 배열을 setPokemons로 저장하세요.
+            .then((detailData)=>{
+                setPokemons(detailData)
+            })
             // TODO 6. catch에서 setError, finally에서 setLoading을 호출하세요.
+            .catch (setError)
+            .finally(()=> setLoading(false))
         }, []);
 
         if (loading) return <p>모든 포켓몬을 불러오는 중...</p>;
@@ -72,16 +97,27 @@
         return (
             <div>
                 {/* TODO 7. pokemons.map으로 Card를 여러 개 렌더링하세요. key와 pokemon props를 전달하세요. */}
+                {pokemons.map((pokemon) => {
+                    return (
+                        <Card
+                        key={pokemon.id}
+                        pokemon={pokemon}
+                        />
+                    )
+                })}
             </div>
         );
     }
 
     // 프롭스로 pokemon을 전달받아 화면을 구성해보세요
-    function Card() {
+    function Card({pokemon}) {
         const imageUrl = pokemon.sprites.other?.dream_world?.front_default || pokemon.sprites.front_default;
 
         return (
             <div className="card">
+                <h3>{pokemon.name}</h3>
+                <p>번호 : {pokemon.id}</p>
+                <img src= {imageUrl}/>
                
             </div>
         );
