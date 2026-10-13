@@ -9,6 +9,7 @@ export const postApi = {
         }
         return response.json()
     },
+    
     createPost: async (newPost) => {    
         const response = await fetch(BASE_URL, {
             method: "POST",
@@ -21,6 +22,7 @@ export const postApi = {
         }
         return response.json()
     },
+
     updatePost : async (id, updatedTitle) => {
         const response = await fetch(`${BASE_URL}/${id}`,{
             method:"PATCH",
@@ -32,6 +34,7 @@ export const postApi = {
         }
         return response.json()
     },
+
     deletePost: async (id) => {
         const response = await fetch (`${BASE_URL}/${id}`,{
             method: "DELETE",})
