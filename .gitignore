@@ -1,0 +1,9 @@
+﻿/.idea/
+**/.idea/
+out/
+**/out/
+*.class
+target/
+**/target/
+build/
+**/build/
