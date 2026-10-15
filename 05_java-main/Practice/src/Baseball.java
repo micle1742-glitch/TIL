@@ -59,9 +59,7 @@ public class Baseball {
                         }
                     }
 
-
                 }
-
 
             }
             System.out.println(strike + "S " + ball + "B 입니다.");

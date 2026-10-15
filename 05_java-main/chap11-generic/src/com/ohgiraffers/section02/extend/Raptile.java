@@ -1,4 +1,4 @@
 package com.ohgiraffers.section02.extend;
 
-public class Raptile {
+public class Raptile implements Animal{
 }
