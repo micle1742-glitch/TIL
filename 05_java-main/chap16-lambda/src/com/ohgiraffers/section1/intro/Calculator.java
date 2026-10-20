@@ -1,4 +1,8 @@
 package com.ohgiraffers.section1.intro;
+/*함수형 인터페이스 : 추상 메소드가 하나인 인터페이스*/
+@FunctionalInterface
+public interface Calculator {
 
-public class Calculator {
+
+    int operate(int a, int b);
 }
