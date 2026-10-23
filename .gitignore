@@ -1,9 +1,34 @@
-﻿/.idea/
-**/.idea/
+﻿# ===== IntelliJ =====
+.idea/
+*.iml
 out/
-**/out/
+
+# ===== Java 빌드 결과물 =====
 *.class
-target/
-**/target/
 build/
-**/build/
+target/
+
+# ===== Gradle (자동 생성 파일) =====
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+build.gradle
+settings.gradle
+
+# ===== Node / React =====
+node_modules/
+dist/
+.next/
+.env
+.env.*
+
+# ===== DB 접속 정보 =====
+**/*-config.properties
+
+# ===== 모듈별 .gitignore (루트 것만 사용) =====
+/*/**/.gitignore
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
