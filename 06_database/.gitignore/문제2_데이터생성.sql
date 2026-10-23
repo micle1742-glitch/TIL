@@ -1,6 +1,29 @@
-sql
-USE employeedb;
+#DROP TABLE `EMPLOYEE`;
+#DROP TABLE `DEPARTMENT`;
+#DROP TABLE `JOB`;
+#DROP TABLE `LOCATION`;
+#DROP TABLE `NATION`;
+#DROP TABLE `SAL_GRADE`;
 
+CREATE TABLE `DEPARTMENT`
+(
+    `DEPT_ID`    CHAR(2)  NOT NULL COMMENT '부서코드',
+    `DEPT_TITLE`    VARCHAR(35) NOT NULL COMMENT '부서명',
+    `LOCATION_ID`    CHAR(2) NOT NULL COMMENT '지역코드',
+ PRIMARY KEY ( `DEPT_ID` )
+)
+ COMMENT = '부서';
+ 
+INSERT INTO DEPARTMENT (DEPT_ID,DEPT_TITLE,LOCATION_ID) VALUES 
+('D1','인사관리부','L1'),
+('D2','회계관리부','L1'),
+('D3','마케팅부','L1'),
+('D4','국내영업부','L1'),
+('D5','해외영업1부','L2'),
+('D6','해외영업2부','L3'),
+('D7','해외영업3부','L4'),
+('D8','기술지원부','L5'),
+('D9','총무부','L1');
 -- EMPLOYEE 테이블
 CREATE TABLE `EMPLOYEE`
 (
