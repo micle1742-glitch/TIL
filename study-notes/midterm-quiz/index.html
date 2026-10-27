@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>중간평가 퀴즈</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --text: #1f2430; --muted: #6b7280; --line: #e3e6ec;
+    --accent: #3b6ef5; --code-bg: #f0f2f6; --ok: #1b8a4b; --ok-bg: #e7f6ed;
+    --warn: #d9a300; --warn-bg: #fff4bf; --danger: #c62d3d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161b; --card: #1d2027; --text: #e6e8ee; --muted: #9aa1ae; --line: #2c303a;
+      --accent: #6c93ff; --code-bg: #262a33; --ok: #5ed08c; --ok-bg: #16301f;
+      --warn: #e6b422; --warn-bg: #3d3515; --danger: #ff7b87;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; line-height: 1.6; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+  .toolbar { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .row:last-child { margin-bottom: 0; }
+  .row.inner { margin: 0; }
+  .label { font-size: 13px; color: var(--muted); min-width: 40px; }
+  button, select { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 8px; padding: 6px 12px; }
+  button:hover, select:hover { border-color: var(--accent); }
+  button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.warn.on { background: var(--warn); border-color: var(--warn); color: #1f2430; }
+  button.danger { color: var(--danger); }
+  .spacer { flex: 1; }
+  .stat { font-size: 14px; color: var(--muted); }
+  .stat b { color: var(--text); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .card.unknown { background: var(--warn-bg); border-color: var(--warn); }
+  .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; font-size: 12px; align-items: center; }
+  .tag { padding: 2px 8px; border-radius: 999px; background: var(--code-bg); color: var(--muted); }
+  .tag.id { background: var(--accent); color: #fff; font-weight: bold; }
+  .q { margin: 0 0 10px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-family: Consolas, "D2Coding", monospace; font-size: 0.92em; }
+  pre { background: var(--code-bg); border-radius: 8px; padding: 12px; overflow-x: auto; margin: 0 0 10px; }
+  pre code { background: none; padding: 0; font-size: 13px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .answer { margin-top: 10px; padding: 10px 12px; border-radius: 8px; background: var(--ok-bg); color: var(--text); font-size: 14px; }
+  .answer .a { color: var(--ok); font-weight: bold; font-size: 16px; }
+  .answer .e { color: var(--muted); margin-top: 2px; }
+  .empty { text-align: center; color: var(--muted); padding: 40px 0; }
+  .hidden { display: none; }
+  #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #1f2430; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>중간평가 퀴즈</h1>
+  <div class="sub">문제를 풀어 본 뒤 "정답 보기"로 확인하고, 헷갈린 문제는 "모름"으로 표시해 두세요.</div>
+
+  <div class="toolbar">
+    <div class="row"><span class="label">주차</span><span id="weekBtns" class="row inner"></span></div>
+    <div class="row"><span class="label">유형</span><span id="typeBtns" class="row inner"></span></div>
+    <div class="row">
+      <span class="label">모름</span>
+      <button id="unknownOnlyBtn" class="warn">모름만 보기</button>
+      <button id="copyBtn">모름 목록 복사</button>
+      <button id="clearBtn" class="danger">모름 전체 해제</button>
+      <span class="spacer"></span>
+      <span class="stat">모름 <b id="unknownCount">0</b>개</span>
+    </div>
+    <div class="row">
+      <span class="label">랜덤</span>
+      <select id="countSel">
+        <option value="20">20문제</option>
+        <option value="50">50문제</option>
+        <option value="100">100문제</option>
+        <option value="all">전체</option>
+      </select>
+      <button id="randomBtn">🎲 랜덤 뽑기</button>
+      <button id="seqBtn">순서대로 보기</button>
+      <button id="shuffleBtn">🔀 문제 섞기</button>
+      <button id="allBtn">정답 모두 보기/숨기기</button>
+      <span class="spacer"></span>
+      <span class="stat" id="count"></span>
+    </div>
+  </div>
+
+  <div id="list"></div>
+</div>
+<div id="toast"></div>
+
+<script src="questions.js"></script>
+<script>
+  // 주차 안에서의 문제 번호를 자동으로 매긴다 (questions.js에는 번호를 쓰지 않는다)
+  const counters = {};
+  QUESTIONS.forEach((q) => { counters[q.week] = (counters[q.week] || 0) + 1; q.no = counters[q.week]; q.key = q.week + "-" + q.no; });
+  const BY_KEY = {};
+  QUESTIONS.forEach((q) => { BY_KEY[q.key] = q; });
+
+  const TYPE_LABEL = { concept: "개념", short: "단답" };
+  const STORE_KEY = "midterm-quiz-unknown";
+
+  // ---- 모름 상태 (localStorage) ----
+  function loadUnknown() {
+    try {
+      const arr = JSON.parse(localStorage.getItem(STORE_KEY) || "[]");
+      return new Set(Array.isArray(arr) ? arr.filter((k) => BY_KEY[k]) : []);
+    } catch (e) { return new Set(); }
+  }
+  function saveUnknown() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify([...unknown])); } catch (e) { /* 저장 불가 시 현재 세션만 유지 */ }
+  }
+  const unknown = loadUnknown();
+
+  const state = {
+    weeks: new Set(),        // 비어 있으면 전체 주차
+    type: "all",
+    unknownOnly: false,
+    order: QUESTIONS.slice(),
+    picked: null,            // 랜덤 뽑기 결과(키 배열), null이면 순서대로/섞기
+    showAll: false,
+  };
+  const $ = (id) => document.getElementById(id);
+
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function fmt(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+  function weeks() { return Array.from(new Set(QUESTIONS.map((q) => q.week))).sort((a, b) => a - b); }
+  function toast(msg) {
+    const t = $("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove("show"), 1800);
+  }
+
+  function makeBtn(text, active, onClick) {
+    const b = document.createElement("button");
+    b.textContent = text;
+    if (active) b.classList.add("on");
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  // 필터(주차·유형·모름만) 조건에 맞는 문제 목록
+  function matches(q) {
+    return (state.weeks.size === 0 || state.weeks.has(q.week)) &&
+      (state.type === "all" || q.type === state.type) &&
+      (!state.unknownOnly || unknown.has(q.key));
+  }
+  function visible() {
+    const src = state.picked ? state.picked.map((k) => BY_KEY[k]) : state.order;
+    return src.filter(matches);
+  }
+
+  // 필터를 바꾸면 이전 랜덤 뽑기 결과는 버린다
+  function changeFilter(fn) { fn(); state.picked = null; render(); }
+
+  function renderFilters() {
+    const wb = $("weekBtns"); wb.innerHTML = "";
+    wb.appendChild(makeBtn("전체", state.weeks.size === 0, () => changeFilter(() => state.weeks.clear())));
+    weeks().forEach((w) => wb.appendChild(makeBtn(w + "주차", state.weeks.has(w), () => changeFilter(() => {
+      if (state.weeks.has(w)) state.weeks.delete(w); else state.weeks.add(w);
+    }))));
+
+    const tb = $("typeBtns"); tb.innerHTML = "";
+    [["all", "전체"], ["concept", "개념 맞추기"], ["short", "단답형"]].forEach(([v, t]) =>
+      tb.appendChild(makeBtn(t, state.type === v, () => changeFilter(() => { state.type = v; }))));
+
+    $("unknownOnlyBtn").classList.toggle("on", state.unknownOnly);
+    $("unknownOnlyBtn").textContent = state.unknownOnly ? "모름만 보기 (켜짐)" : "모름만 보기";
+  }
+
+  function renderStats() {
+    $("unknownCount").textContent = unknown.size;
+    const n = $("list").querySelectorAll(".card").length;
+    $("count").textContent = n + "문제 표시" + (state.picked ? " (랜덤)" : "");
+    if (!n && !$("list").querySelector(".empty")) {
+      $("list").innerHTML = '<div class="empty">' + (state.unknownOnly ? "모름으로 표시한 문제가 없습니다." : "조건에 맞는 문제가 없습니다.") + "</div>";
+    }
+  }
+
+  function renderCard(q) {
+    const card = document.createElement("div");
+    card.className = "card" + (unknown.has(q.key) ? " unknown" : "");
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    [[q.week + "주차 #" + q.no, "id"], [TYPE_LABEL[q.type], ""], [q.topic, ""]].forEach(([t, c]) => {
+      const s = document.createElement("span"); s.className = "tag " + c; s.textContent = t; meta.appendChild(s);
+    });
+    card.appendChild(meta);
+
+    const p = document.createElement("p");
+    p.className = "q";
+    p.innerHTML = fmt(q.question);
+    card.appendChild(p);
+
+    if (q.code) {
+      const pre = document.createElement("pre");
+      const c = document.createElement("code");
+      c.textContent = q.code;
+      pre.appendChild(c);
+      card.appendChild(pre);
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const ans = document.createElement("div");
+    ans.className = "answer" + (state.showAll ? "" : " hidden");
+    ans.innerHTML = '<div class="a">' + fmt(q.answer) + '</div><div class="e">' + fmt(q.explanation) + "</div>";
+
+    const toggle = makeBtn(state.showAll ? "정답 숨기기" : "정답 보기", false, () => {
+      const hidden = ans.classList.toggle("hidden");
+      toggle.textContent = hidden ? "정답 보기" : "정답 숨기기";
+    });
+
+    const mark = makeBtn("", false, () => {
+      if (unknown.has(q.key)) unknown.delete(q.key); else unknown.add(q.key);
+      saveUnknown();
+      paintMark();
+      if (state.unknownOnly && !unknown.has(q.key)) card.remove(); // 모름 목록에서 바로 빠짐
+      renderStats();
+    });
+    mark.classList.add("warn");
+    function paintMark() {
+      const on = unknown.has(q.key);
+      mark.textContent = on ? "모름 해제" : "모름";
+      mark.classList.toggle("on", on);
+      card.classList.toggle("unknown", on);
+    }
+    paintMark();
+
+    actions.appendChild(toggle);
+    actions.appendChild(mark);
+    card.appendChild(actions);
+    card.appendChild(ans);
+    return card;
+  }
+
+  function render() {
+    renderFilters();
+    const box = $("list");
+    box.innerHTML = "";
+    visible().forEach((q) => box.appendChild(renderCard(q)));
+    renderStats();
+  }
+
+  // ---- 랜덤 뽑기: 선택한 주차들에서 문제 수 비율대로 ----
+  function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function pickRandom() {
+    const pool = QUESTIONS.filter(matches);
+    if (!pool.length) { toast("뽑을 문제가 없습니다."); return; }
+    const sel = $("countSel").value;
+    const want = sel === "all" ? pool.length : Math.min(Number(sel), pool.length);
+
+    const groups = {};
+    pool.forEach((q) => { (groups[q.week] = groups[q.week] || []).push(q); });
+    const ws = Object.keys(groups);
+    // 비율 배분(최대잔여법): 합계가 정확히 want가 되도록 맞춘다
+    const quota = {}; let used = 0;
+    const rema = ws.map((w) => {
+      const exact = want * groups[w].length / pool.length;
+      quota[w] = Math.min(Math.floor(exact), groups[w].length); used += quota[w];
+      return { w, frac: exact - Math.floor(exact) };
+    }).sort((a, b) => b.frac - a.frac);
+    for (let i = 0; used < want && i < rema.length * 3; i++) {
+      const w = rema[i % rema.length].w;
+      if (quota[w] < groups[w].length) { quota[w]++; used++; }
+    }
+    const picked = [];
+    ws.forEach((w) => shuffle(groups[w].slice()).slice(0, quota[w]).forEach((q) => picked.push(q.key)));
+    state.picked = shuffle(picked);
+    render();
+    toast(picked.length + "문제를 뽑았습니다.");
+  }
+
+  // ---- 모름 목록 복사 ----
+  function unknownText() {
+    return [...unknown].map((k) => BY_KEY[k]).sort((a, b) => a.week - b.week || a.no - b.no)
+      .map((q) => q.week + "주차 #" + q.no).join(", ");
+  }
+  function copyUnknown() {
+    const text = unknownText();
+    if (!text) { toast("모름으로 표시한 문제가 없습니다."); return; }
+    const done = () => toast("복사했습니다: " + (text.length > 40 ? text.slice(0, 40) + "…" : text));
+    const fallback = () => {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { toast("복사에 실패했습니다."); }
+      ta.remove();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  }
+
+  // ---- 버튼 연결 ----
+  $("unknownOnlyBtn").addEventListener("click", () => changeFilter(() => { state.unknownOnly = !state.unknownOnly; }));
+  $("copyBtn").addEventListener("click", copyUnknown);
+  $("clearBtn").addEventListener("click", () => {
+    if (!unknown.size) { toast("해제할 모름 표시가 없습니다."); return; }
+    if (confirm("모름 표시 " + unknown.size + "개를 모두 해제할까요?")) { unknown.clear(); saveUnknown(); render(); }
+  });
+  $("randomBtn").addEventListener("click", pickRandom);
+  $("seqBtn").addEventListener("click", () => { state.picked = null; state.order = QUESTIONS.slice(); render(); });
+  $("shuffleBtn").addEventListener("click", () => {
+    if (state.picked) state.picked = shuffle(state.picked.slice());
+    else state.order = shuffle(state.order.slice());
+    render();
+  });
+  $("allBtn").addEventListener("click", () => { state.showAll = !state.showAll; render(); });
+
+  render();
+</script>
+</body>
+</html>
