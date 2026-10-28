@@ -304,5 +304,26 @@ const QUESTIONS = [
   { week:7,type:"short",topic:"init·destroy",question:"@Bean 속성 중 Bean이 소멸될 때 실행할 메서드 이름을 지정하는 속성은?",answer:"destroyMethod",explanation:"생성 후 실행은 initMethod이고, 값은 메서드 이름 문자열이다." },
   { week: 7, type: "short", topic: "init·destroy", question: "destroyMethod가 실행되게 하려면 컨테이너에 호출해야 하는 메서드는?", answer: "close()", explanation: "close()를 하지 않으면 destroy 메서드가 실행되지 않는다." },
   { week: 7, type: "concept", topic: "properties", question: "읽어올 .properties 파일의 경로를 설정 클래스에 지정하는 어노테이션은?", answer: "@PropertySource", explanation: "경로는 resources 폴더 기준이다." },
-  { week: 7, type: "short", topic: "properties", question: "`@Value(\"${bread.price:0}\")`에서 `:` 뒤의 `0`의 의미는?", answer: "key가 없을 때 쓰는 기본값", explanation: "콜론 뒤가 기본값이며, 기본값이 없는데 key가 없으면 에러가 난다." }
+  { week: 7, type: "short", topic: "properties", question: "`@Value(\"${bread.price:0}\")`에서 `:` 뒤의 `0`의 의미는?", answer: "key가 없을 때 쓰는 기본값", explanation: "콜론 뒤가 기본값이며, 기본값이 없는데 key가 없으면 에러가 난다." },
+
+  { week: 7, type: "concept", topic: "AOP", question: "AOP에서 공통 기능(Advice)을 적용할 메소드를 고르는 조건은?", answer: "Pointcut", explanation: "`execution(* 패키지.*Service.*(..))`처럼 대상을 지정한다." },
+  { week: 7, type: "concept", topic: "AOP", question: "메소드 실행 전후를 모두 감싸고, `proceed()`를 호출해야 원래 메소드가 실행되는 Advice는?", answer: "@Around", explanation: "매개변수로 JoinPoint가 아닌 ProceedingJoinPoint를 받는다." },
+  { week: 7, type: "concept", topic: "AOP", question: "대상 메소드에서 예외가 발생했을 때만 실행되는 Advice는?", answer: "@AfterThrowing", explanation: "정상 반환 후에만 실행되는 것은 @AfterReturning이다." },
+
+  { week: 7, type: "concept", topic: "Spring Boot", question: "@Configuration, @EnableAutoConfiguration, @ComponentScan을 합친 Spring Boot 시작 클래스용 어노테이션은?", answer: "@SpringBootApplication", explanation: "이 클래스가 있는 패키지와 하위 패키지를 스캔한다." },
+
+  { week: 7, type: "concept", topic: "Request Mapping", question: "@Controller와 @ResponseBody를 합쳐, 반환값을 화면이 아닌 HTTP 응답 본문(JSON)으로 보내는 어노테이션은?", answer: "@RestController", explanation: "Map·DTO를 반환하면 Jackson이 JSON으로 변환한다." },
+  { week: 7, type: "short", topic: "Request Mapping", question: "아래 deleteMenu가 처리하는 요청은? (HTTP 메소드 + URL)", code: "@RestController\n@RequestMapping(\"/api/v1/menus\")\npublic class MenuController {\n    @DeleteMapping(\"/{menuCode}\")\n    public ResponseEntity<...> deleteMenu(@PathVariable int menuCode) { ... }\n}", answer: "DELETE /api/v1/menus/{menuCode}", explanation: "메소드 주소는 클래스 주소 뒤에 이어 붙는다." },
+  { week: 7, type: "short", topic: "Request Mapping", question: "등록 성공 시 201 응답을 보내도록 빈칸을 채우시오.", code: "return ResponseEntity.status(HttpStatus.______).body(response);", answer: "CREATED", explanation: "ResponseEntity.ok()는 200 OK이다." },
+
+  { week: 7, type: "concept", topic: "Handler Method", question: "`?keyword=coffee&page=1` 같은 Query String 값을 매개변수로 받는 어노테이션은?", answer: "@RequestParam", explanation: "required = false면 없을 때 null, defaultValue면 기본값이 들어간다." },
+  { week: 7, type: "concept", topic: "Handler Method", question: "`/api/v1/menus/5`처럼 URL 경로 안의 값을 매개변수로 받는 어노테이션은?", answer: "@PathVariable", explanation: "경로의 `{menuCode}` 이름과 매개변수를 연결한다." },
+  { week: 7, type: "concept", topic: "Handler Method", question: "요청 본문의 JSON을 DTO 객체로 변환해 받는 어노테이션은?", answer: "@RequestBody", explanation: "JSON 키 이름과 DTO 프로퍼티 이름이 같아야 하고 기본 생성자가 필요하다." },
+
+  { week: 7, type: "concept", topic: "Jackson", question: "Java 객체를 JSON으로 바꾸는 것을 부르는 말은?", answer: "직렬화", explanation: "반대로 JSON을 Java 객체로 바꾸는 것은 역직렬화이다." },
+  { week: 7, type: "concept", topic: "Jackson", question: "Java 필드 `no`를 JSON에서는 `memberNo`라는 키로 주고받게 하는 어노테이션은?", answer: "@JsonProperty", explanation: "`@JsonProperty(\"memberNo\")`는 직렬화·역직렬화 모두에 적용된다." },
+
+  { week: 7, type: "concept", topic: "Exception Handler", question: "모든 Controller에서 발생한 예외를 한 곳에서 처리하고 반환값을 JSON 응답 본문으로 보내는 클래스 어노테이션은?", answer: "@RestControllerAdvice", explanation: "메소드에는 @ExceptionHandler(예외.class)를 붙여 예외 타입별로 처리한다." },
+  { week: 7, type: "concept", topic: "Exception Handler", question: "@RequestBody DTO 앞에 붙여 @NotBlank, @Min 같은 검증 어노테이션을 검사하게 하는 어노테이션은?", answer: "@Valid", explanation: "검증에 실패하면 MethodArgumentNotValidException이 발생한다." },
+  { week: 7, type: "short", topic: "Exception Handler", question: "존재하지 않는 회원을 조회했을 때 응답으로 보내는 HTTP 상태 코드는?", answer: "404", explanation: "대상이 없는 것은 서버 오류(500)가 아니라 404 Not Found이다." }
 ];

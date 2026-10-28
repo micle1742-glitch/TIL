@@ -40,6 +40,8 @@
   .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; font-size: 12px; align-items: center; }
   .tag { padding: 2px 8px; border-radius: 999px; background: var(--code-bg); color: var(--muted); }
   .tag.id { background: var(--accent); color: #fff; font-weight: bold; }
+  .copy-q { font-size: 12px; padding: 1px 7px; border-radius: 6px; line-height: 1.5; color: var(--muted); }
+  .copy-q.done { color: var(--ok); border-color: var(--ok); }
   .q { margin: 0 0 10px; }
   code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-family: Consolas, "D2Coding", monospace; font-size: 0.92em; }
   pre { background: var(--code-bg); border-radius: 8px; padding: 12px; overflow-x: auto; margin: 0 0 10px; }
@@ -184,8 +186,9 @@
 
     const meta = document.createElement("div");
     meta.className = "meta";
-    [[q.week + "주차 #" + q.no, "id"], [TYPE_LABEL[q.type], ""], [q.topic, ""]].forEach(([t, c]) => {
+    [[q.week + "주차 #" + q.no, "id"], [TYPE_LABEL[q.type], ""], [q.topic, ""]].forEach(([t, c], i) => {
       const s = document.createElement("span"); s.className = "tag " + c; s.textContent = t; meta.appendChild(s);
+      if (i === 0) meta.appendChild(makeCopyBtn(q)); // 주차·번호 라벨 바로 옆
     });
     card.appendChild(meta);
 
@@ -280,6 +283,38 @@
     toast(picked.length + "문제를 뽑았습니다.");
   }
 
+  // ---- 클립보드 복사 (clipboard API가 막히면 textarea + execCommand로 대체) ----
+  function copyText(text, done) {
+    const fallback = () => {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy") ? done() : toast("복사에 실패했습니다."); } catch (e) { toast("복사에 실패했습니다."); }
+      ta.remove();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  }
+
+  // ---- 문제 하나 복사 (질문용 형식) ----
+  function questionText(q) {
+    const lines = ["[" + q.week + "주차 #" + q.no + "] (" + TYPE_LABEL[q.type] + ")", "문제: " + q.question];
+    if (q.code) lines.push("코드:\n" + q.code);
+    lines.push("정답: " + q.answer, "해설: " + q.explanation, "이 문제 정답이 왜 이건지 쉽게 설명해줘.");
+    return lines.join("\n");
+  }
+  function makeCopyBtn(q) {
+    const b = makeBtn("📋", false, () => copyText(questionText(q), () => {
+      b.textContent = "복사됨"; b.classList.add("done");
+      clearTimeout(b.timer);
+      b.timer = setTimeout(() => { b.textContent = "📋"; b.classList.remove("done"); }, 1500);
+    }));
+    b.className = "copy-q";
+    b.title = "문제 복사";
+    b.setAttribute("aria-label", "문제 복사");
+    return b;
+  }
+
   // ---- 모름 목록 복사 ----
   function unknownText() {
     return [...unknown].map((k) => BY_KEY[k]).sort((a, b) => a.week - b.week || a.no - b.no)
@@ -288,16 +323,7 @@
   function copyUnknown() {
     const text = unknownText();
     if (!text) { toast("모름으로 표시한 문제가 없습니다."); return; }
-    const done = () => toast("복사했습니다: " + (text.length > 40 ? text.slice(0, 40) + "…" : text));
-    const fallback = () => {
-      const ta = document.createElement("textarea");
-      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
-      document.body.appendChild(ta); ta.select();
-      try { document.execCommand("copy"); done(); } catch (e) { toast("복사에 실패했습니다."); }
-      ta.remove();
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
-    else fallback();
+    copyText(text, () => toast("복사했습니다: " + (text.length > 40 ? text.slice(0, 40) + "…" : text)));
   }
 
   // ---- 버튼 연결 ----
