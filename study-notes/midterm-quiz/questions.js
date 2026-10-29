@@ -6,13 +6,14 @@
  *   - concept: 개념 맞추기 (짧은 설명 → 개념 이름)
  *   - short  : 단답형 (짧은 코드 결과 / 빈칸 하나)
  *   - choice : 객관식 (보기 4개, answer는 보기 중 하나와 똑같이)
+ * hidden: true 를 붙이면 퀴즈 페이지·md에서 빠지지만 번호 자리는 그대로 차지한다. (문제를 빼고 싶을 때 삭제 대신 사용)
  * 문제 번호는 주차 안에서 위에서부터 자동으로 매겨진다.
  * 팀원들의 "모름" 표시가 번호 기준이므로 기존 문제의 순서를 바꾸거나 중간에 끼워 넣지 않는다.
  */
 const QUESTIONS = [
   /* ===================== 1주차 ===================== */
-  { week: 1, type: "concept", topic: "CSS(최소)", question: "요소의 내용과 테두리 사이의 안쪽 여백을 만드는 CSS 속성은?", answer: "padding", explanation: "padding은 안쪽 여백, margin은 바깥 여백이다." },
-  { week: 1, type: "concept", topic: "CSS(최소)", question: "box-sizing에서 width 안에 padding과 border까지 포함하는 값은?", answer: "border-box", explanation: "border-box는 padding과 border를 width/height에 포함해 계산한다." },
+  { week: 1, type: "concept", topic: "CSS(최소)", question: "요소의 내용과 테두리 사이의 안쪽 여백을 만드는 CSS 속성은?", answer: "padding", explanation: "padding은 안쪽 여백, margin은 바깥 여백이다.", hidden: true },
+  { week: 1, type: "concept", topic: "CSS(최소)", question: "box-sizing에서 width 안에 padding과 border까지 포함하는 값은?", answer: "border-box", explanation: "border-box는 padding과 border를 width/height에 포함해 계산한다.", hidden: true },
 
   { week: 1, type: "concept", topic: "변수·스코프", question: "값을 다시 할당(재할당)할 수 없는 변수 선언 키워드는?", answer: "const", explanation: "const는 값을 다시 할당할 수 없다." },
   { week: 1, type: "concept", topic: "변수·스코프", question: "블록이 아니라 함수 단위 스코프를 가지는 변수 선언 키워드는?", answer: "var", explanation: "var는 블록을 벗어나도 쓸 수 있고 함수 밖으로만 못 나간다." },
