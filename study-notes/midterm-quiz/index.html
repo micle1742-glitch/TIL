@@ -8,13 +8,13 @@
   :root {
     --bg: #f5f6f8; --card: #ffffff; --text: #1f2430; --muted: #6b7280; --line: #e3e6ec;
     --accent: #3b6ef5; --code-bg: #f0f2f6; --ok: #1b8a4b; --ok-bg: #e7f6ed;
-    --warn: #d9a300; --warn-bg: #fff4bf; --danger: #c62d3d;
+    --warn: #d9a300; --warn-bg: #fff4bf; --danger: #c62d3d; --danger-bg: #fdeaec;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #14161b; --card: #1d2027; --text: #e6e8ee; --muted: #9aa1ae; --line: #2c303a;
       --accent: #6c93ff; --code-bg: #262a33; --ok: #5ed08c; --ok-bg: #16301f;
-      --warn: #e6b422; --warn-bg: #3d3515; --danger: #ff7b87;
+      --warn: #e6b422; --warn-bg: #3d3515; --danger: #ff7b87; --danger-bg: #3a1c20;
     }
   }
   * { box-sizing: border-box; }
@@ -46,6 +46,11 @@
   code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-family: Consolas, "D2Coding", monospace; font-size: 0.92em; }
   pre { background: var(--code-bg); border-radius: 8px; padding: 12px; overflow-x: auto; margin: 0 0 10px; }
   pre code { background: none; padding: 0; font-size: 13px; }
+  .options { display: grid; gap: 6px; margin: 0 0 10px; }
+  .opt { text-align: left; font-family: Consolas, "D2Coding", monospace; font-size: 14px; overflow-wrap: anywhere; }
+  .opt:disabled { cursor: default; }
+  .opt.correct { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); font-weight: bold; }
+  .opt.wrong { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); }
   .actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .answer { margin-top: 10px; padding: 10px 12px; border-radius: 8px; background: var(--ok-bg); color: var(--text); font-size: 14px; }
   .answer .a { color: var(--ok); font-weight: bold; font-size: 16px; }
@@ -101,7 +106,8 @@
   const BY_KEY = {};
   QUESTIONS.forEach((q) => { BY_KEY[q.key] = q; });
 
-  const TYPE_LABEL = { concept: "개념", short: "단답" };
+  const TYPE_LABEL = { concept: "개념", short: "단답", choice: "객관식" };
+  const MARK = ["①", "②", "③", "④", "⑤"];
   const STORE_KEY = "midterm-quiz-unknown";
 
   // ---- 모름 상태 (localStorage) ----
@@ -164,7 +170,7 @@
     }))));
 
     const tb = $("typeBtns"); tb.innerHTML = "";
-    [["all", "전체"], ["concept", "개념 맞추기"], ["short", "단답형"]].forEach(([v, t]) =>
+    [["all", "전체"], ["concept", "개념 맞추기"], ["short", "단답형"], ["choice", "객관식"]].forEach(([v, t]) =>
       tb.appendChild(makeBtn(t, state.type === v, () => changeFilter(() => { state.type = v; }))));
 
     $("unknownOnlyBtn").classList.toggle("on", state.unknownOnly);
@@ -203,6 +209,25 @@
       c.textContent = q.code;
       pre.appendChild(c);
       card.appendChild(pre);
+    }
+
+    // 객관식: 보기를 누르면 바로 정답(초록)/오답(빨강) 표시, 한 번 고르면 잠근다
+    if (q.type === "choice" && Array.isArray(q.options)) {
+      const box = document.createElement("div");
+      box.className = "options";
+      const btns = q.options.map((o, i) => {
+        const b = makeBtn(MARK[i] + " " + o, false, () => {
+          btns.forEach((x, j) => {
+            x.disabled = true;
+            if (q.options[j] === q.answer) x.classList.add("correct");
+          });
+          if (o !== q.answer) b.classList.add("wrong");
+        });
+        b.classList.add("opt");
+        box.appendChild(b);
+        return b;
+      });
+      card.appendChild(box);
     }
 
     const actions = document.createElement("div");
@@ -300,6 +325,7 @@
   function questionText(q) {
     const lines = ["[" + q.week + "주차 #" + q.no + "] (" + TYPE_LABEL[q.type] + ")", "문제: " + q.question];
     if (q.code) lines.push("코드:\n" + q.code);
+    if (q.options) lines.push("보기: " + q.options.map((o, i) => MARK[i] + " " + o).join("  "));
     lines.push("정답: " + q.answer, "해설: " + q.explanation, "이 문제 정답이 왜 이건지 쉽게 설명해줘.");
     return lines.join("\n");
   }

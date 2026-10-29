@@ -10,6 +10,8 @@ const path = require('path');
 const dir = path.join(__dirname, '..') + path.sep;
 const Q = eval(fs.readFileSync(dir + 'questions.js', 'utf8') + '\n;QUESTIONS');
 const lang = { 1: 'js', 2: 'js', 3: 'js', 4: 'java', 5: 'java', 6: 'sql', 7: 'java' };
+const TYPE_LABEL = { concept: '개념', short: '단답', choice: '객관식' };
+const MARK = ['①', '②', '③', '④', '⑤'];
 const weeksArg = process.argv.slice(2).map(Number);
 const weeks = weeksArg.length ? weeksArg : [...new Set(Q.map((q) => q.week))];
 for (const w of weeks) {
@@ -20,21 +22,23 @@ for (const w of weeks) {
     topics.get(q.topic).push(i + 1);
   });
   let out = `# ${w}주차 중간평가 대비 문제\n\n범위: ${[...topics.keys()].join(', ')}\n\n`;
-  out += `- 유형: [개념] 설명을 보고 개념 이름 맞추기 / [단답] 짧은 코드 결과 쓰기·빈칸 채우기\n- 정답은 맨 아래에 있습니다.\n\n---\n\n# 문제\n\n`;
+  out += `- 유형: [개념] 설명을 보고 개념 이름 맞추기 / [단답] 짧은 코드 결과 쓰기·빈칸 채우기 / [객관식] 보기 4개 중 고르기\n- 정답은 맨 아래에 있습니다.\n\n---\n\n# 문제\n\n`;
   qs.forEach((q, i) => {
-    out += `**${i + 1}.** [${q.type === 'concept' ? '개념' : '단답'}] ${q.question}\n`;
+    out += `**${i + 1}.** [${TYPE_LABEL[q.type]}] ${q.question}\n`;
     if (q.code) out += `\n\`\`\`${lang[w] || ''}\n${q.code}\n\`\`\`\n`;
+    if (q.options) out += '\n' + q.options.map((o, j) => `${MARK[j]} \`${o}\``).join('  \n') + '\n';
     out += '\n';
   });
   out += `---\n\n# 정답\n\n| 번호 | 정답 | 해설 |\n|---|---|---|\n`;
   const esc = (s) => String(s).replace(/\|/g, '\\|').replace(/\n/g, '<br>');
   qs.forEach((q, i) => {
-    out += `| ${i + 1} | ${esc(q.answer)} | ${esc(q.explanation)} |\n`;
+    const a = q.options ? `${MARK[q.options.indexOf(q.answer)]} ${q.answer}` : q.answer;
+    out += `| ${i + 1} | ${esc(a)} | ${esc(q.explanation)} |\n`;
   });
   out += `\n---\n\n## 주제별 문제 수 요약\n\n| 주제 | 문제 수 | 번호 |\n|---|---|---|\n`;
   for (const [t, nums] of topics) out += `| ${t} | ${nums.length} | ${nums.join(', ')} |\n`;
-  const c = qs.filter((q) => q.type === 'concept').length;
-  out += `\n- 합계: ${qs.length}문제 (개념 ${c}, 단답 ${qs.length - c})\n`;
+  const n = (t) => qs.filter((q) => q.type === t).length;
+  out += `\n- 합계: ${qs.length}문제 (개념 ${n('concept')}, 단답 ${n('short')}, 객관식 ${n('choice')})\n`;
   fs.writeFileSync(dir + `${w}주차.md`, out, 'utf8');
-  console.log(w, qs.length, c);
+  console.log(w, qs.length, n('concept'), n('short'), n('choice'));
 }
