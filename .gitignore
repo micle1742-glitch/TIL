@@ -29,6 +29,9 @@ dist/
 # ===== 모듈별 .gitignore (루트 것만 사용) =====
 /*/**/.gitignore
 
+# ===== 강사님 레포 clone (자체 .git이 있어 올리지 않음) =====
+/10_jpa/
+
 # ===== OS =====
 .DS_Store
 Thumbs.db
