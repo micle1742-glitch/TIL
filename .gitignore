@@ -44,3 +44,9 @@ __pycache__/
 
 # ===== 대용량 파일 (10MB 초과) =====
 01-html/sample/video/video1.mp4
+
+# ===== AI 수업 코드 (로컬 전용, study-notes만 올림) =====
+/ai/
+
+# ===== Claude Code 설정 (로컬 전용) =====
+CLAUDE.md
