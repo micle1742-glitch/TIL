@@ -31,9 +31,6 @@ dist/
 /*/**/.gitignore
 
 # ===== 강사님 레포 clone (자체 .git이 있어 올리지 않음) =====
-/09-spring-web/
-/10-jpa/
-/11-security/
 /sesac/
 
 # ===== OS =====
