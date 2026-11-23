@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/securitydb?createDatabaseIfNotExist=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: ohgiraffers
+    password: ohgiraffers
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    org.springframework.security: debug
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:c3ByaW5nLXNlY3VyaXR5LWp3dC1jbGFzcy1zZWNyZXQta2V5LTEyMzQ=}
+    expiration-seconds: 3600
+  refresh-token:
+    expiration-seconds: 1209600
+    # 로컬 HTTP 실습에서는 false로 둔다.
+    # 운영에서는 HTTPS를 설정하고, 쿠키를 HTTPS 요청에만 보내도록 true로 바꾼다
+    cookie-secure: false
