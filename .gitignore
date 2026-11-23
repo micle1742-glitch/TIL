@@ -2,6 +2,7 @@
 .idea/
 *.iml
 out/
+bin/
 
 # ===== Java 빌드 결과물 =====
 *.class
@@ -30,8 +31,19 @@ dist/
 /*/**/.gitignore
 
 # ===== 강사님 레포 clone (자체 .git이 있어 올리지 않음) =====
-/10_jpa/
+/09-spring-web/
+/10-jpa/
+/11-security/
+/sesac/
 
 # ===== OS =====
 .DS_Store
 Thumbs.db
+
+# ===== Python =====
+.venv/
+venv/
+__pycache__/
+
+# ===== 대용량 파일 (10MB 초과) =====
+01-html/sample/video/video1.mp4
